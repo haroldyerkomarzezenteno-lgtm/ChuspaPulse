@@ -36,18 +36,26 @@ static std::string jsonEscape(const std::string& s) {
  * @return        String JSON con los cinco campos públicos.
  */
 std::string handleConfig(const chuspapulse::config::Config& config) {
-    const int interval_ms = config.sampler.intervalo_segundos * 1000;
+    try {
 
-    std::ostringstream json;
-    json << "{"
-         << "\"interval_ms\":"   << interval_ms                            << ","
-         << "\"http_port\":"     << config.servidor.puerto                 << ","
-         << "\"log_level\":\""   << jsonEscape(config.nivel_log)   << "\","
-         << "\"output_format\":\"" << jsonEscape(config.output_format) << "\","
-         << "\"version\":\""     << chuspapulse::APP_VERSION << "\""
-         << "}";
+        int interval_ms = config.sampler.intervalo_segundos * 1000;
+        
+        std::ostringstream json;
+        json << "{"
+             << "\"interval_ms\":" << interval_ms << ","
+             << "\"http_port\":" << config.servidor.puerto << ","
+             << "\"log_level\":\"" << jsonEscape(config.nivel_log) << "\","
+             << "\"output_format\":\"" << jsonEscape(config.output_format) << "\","
+             << "\"version\":\"" << chuspapulse::APP_VERSION << "\""
+             << "}";
 
-    return json.str();
+        return json.str();
+
+    } catch (const std::exception& e) {
+        // Si ocurre un error interno, el catch lo atrapa de forma segura
+        // Aquí podrías retornar un mensaje de error o manejar el código 500
+        return "{\"error\": \"Error interno al procesar la configuracion\"}";
+    }
 }
 
 } // namespace chuspapulse::http
